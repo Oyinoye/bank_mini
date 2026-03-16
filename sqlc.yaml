@@ -15,23 +15,29 @@
 # version: "1"
 # packages:
 #   - name: "db"
-#     path: "internal/db"
-#     queries: "query.sql"
-#     schema: "schema.sql"
+#     path: "./db/sqlc"
+#     queries: "./db/query/"
+#     schema: "./db/migration/"
 #     engine: "postgresql"
+#     sql_package: "database/sql"
+#     emit_json_tags: true
+#     emit_prepared_queries: false
+#     emit_interface: false
+#     emit_exact_table_names: false
 
 
 version: "2"
 sql:
-  - schema: "./db/migration/"        # Path to your DDL (CREATE TABLE, etc.)
-    queries: "./db/query/"       # Path to your DML (SELECT, INSERT, etc.)
+  - schema: "db/migration"        # Path to your DDL (CREATE TABLE, etc.)
+    queries: "db/query"       # Path to your DML (SELECT, INSERT, etc.)
     engine: "postgresql"       # or "mysql"
     gen:
       go:
         package: "db"          # Name of the generated Go package
-        out: "./db/sqlc"              # Directory where files will be created
-        sql_package: "pgx/v5"  # Recommended for modern Go/Postgres apps
+        out: "db/sqlc"              # Directory where files will be created
+        sql_package: "database/sql"  # Recommended for modern Go/Postgres apps
         emit_json_tags: true   # Adds `json:"column_name"` to structs
         emit_prepared_queries: false
-        emit_interface: false   # Great for mocking in tests
+        emit_interface: true   # Great for mocking in tests
+        emit_empty_slices: true
         emit_exact_table_names: false
