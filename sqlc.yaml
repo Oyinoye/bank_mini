@@ -1,0 +1,37 @@
+# version: "2"
+# cloud:
+#     organization: ""
+#     project: ""
+#     hostname: ""
+# servers: []
+# sql: []
+# overrides:
+#     go: null
+# plugins: []
+# rules: []
+# options: {}
+
+
+# version: "1"
+# packages:
+#   - name: "db"
+#     path: "internal/db"
+#     queries: "query.sql"
+#     schema: "schema.sql"
+#     engine: "postgresql"
+
+
+version: "2"
+sql:
+  - schema: "./db/migration/"        # Path to your DDL (CREATE TABLE, etc.)
+    queries: "./db/query/"       # Path to your DML (SELECT, INSERT, etc.)
+    engine: "postgresql"       # or "mysql"
+    gen:
+      go:
+        package: "db"          # Name of the generated Go package
+        out: "./db/sqlc"              # Directory where files will be created
+        sql_package: "pgx/v5"  # Recommended for modern Go/Postgres apps
+        emit_json_tags: true   # Adds `json:"column_name"` to structs
+        emit_prepared_queries: false
+        emit_interface: false   # Great for mocking in tests
+        emit_exact_table_names: false

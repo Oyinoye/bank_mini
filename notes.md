@@ -28,3 +28,36 @@
     * `migrate create -ext sql -dir db/migration` - create up and down migration files.
     * `migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up` - run the migration in migration folder.
 
+
+### Options for Running SQL querie in Go
+    * 1. DATABASE/SQL   
+        - Fast and straightforward.
+        - Manual mapping SQL fields to variables
+        - Easy to make mitakes, not caught until runtime.
+        
+    * 2. GORM   
+        - CRUD functions already implemented, very short production code.
+        - Must lean to write queries using gorm's function
+        - Runs slowly on high load.
+        
+    * 3. SQLX   
+        - Quite fast and easy to use.
+        - Fields mapping via query text and struct tags.
+        - Failure won't occur until runtime.
+        
+    * 4. SQLC   
+        - Very fast and easy to use.
+        - Automatic code generation.
+        - Catch SQL query errors before generating codes.
+        - Full support Postgres. MySQL is experimental.
+
+
+### SQLC for GO with codegen 
+    * 1. Codegen: after installing SQLC:
+        - `sqlc init` - Create sqlc.yaml file.
+        - `docker ps` - Impute .
+        - `make sqlc` - generates code from the sql queries.
+        - `go mod init github.com/Oyinoye/bank_mini` - initializes a new go project
+        - `go mod tidy` - install go dependencies.
+        
+    
