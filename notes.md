@@ -60,4 +60,6 @@
         - `go mod init github.com/Oyinoye/bank_mini` - initializes a new go project
         - `go mod tidy` - install go dependencies.
         
+    * 2. lib pq: Go prostgres driver for Go' database/sql package (github.com/lib/pq).
+        - `go get github.com/lib/pq` - install pq.
     
