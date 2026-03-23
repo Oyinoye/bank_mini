@@ -63,3 +63,6 @@
     * 2. lib pq: Go prostgres driver for Go' database/sql package (github.com/lib/pq).
         - `go get github.com/lib/pq` - install pq.
     
+### Testing with GO 
+    Normal testing can be done using conditionals. But testify package (www.github.com/stretchr/testify) can be used to get check test result
+        - `go get github.com/stretchr/testify` - install testify package.
