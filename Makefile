@@ -19,4 +19,8 @@ migratedown:
 sqlc:
 	sqlc generate
 
+test:
+	go test -v -cover ./...
+#     ./... to run tests in all the folders
+
 .PHONY: postgres createdb dropdb migrateup migratedown sqlc
