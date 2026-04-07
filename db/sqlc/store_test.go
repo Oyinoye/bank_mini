@@ -10,6 +10,8 @@ import (
 )
 
 func TestTransferTx(t *testing.T) {
+	fmt.Println("----Start TestTransfer test----")
+
     store := NewStore(testDB)
 
 	account1 := createRandomAccount(t)
@@ -17,7 +19,7 @@ func TestTransferTx(t *testing.T) {
 	fmt.Println(">> before:", account1.Balance, account2.Balance)
 
     // number of concurrent transfer transactions
-	n := 5
+	n := 2
 	amount := "10"
 
     // Use channels to enable data sharing between different go routines.
@@ -27,8 +29,24 @@ func TestTransferTx(t *testing.T) {
 
 	// run n concurrent transfer transaction
 	for i := 0; i < n; i++ {
+
+	// 	go func() {
+	// 		result, err := store.TransferTx(context.Background(), TransferTxParams{
+	// 			FromAccountID: account1.ID,
+	// 			ToAccountID:   account2.ID,
+	// 			Amount:        amount,
+	// 		})
+
+    //         // Send errors and results to respective channel.   channel <- data
+	// 		errs <- err
+	// 		results <- result
+	// 	}()
+
+        // Commented - This code below is used for debugging deadlock scenario.
+        txName := fmt.Sprintf("tx %d", i+1)
 		go func() {
-			result, err := store.TransferTx(context.Background(), TransferTxParams{
+            ctx := context.WithValue(context.Background(), txKey, txName) // now context will hold transaction key and name
+			result, err := store.TransferTx(ctx, TransferTxParams{
 				FromAccountID: account1.ID,
 				ToAccountID:   account2.ID,
 				Amount:        amount,

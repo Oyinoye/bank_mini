@@ -66,3 +66,25 @@
 ### Testing with GO 
     Normal testing can be done using conditionals. But testify package (www.github.com/stretchr/testify) can be used to get check test result
         - `go get github.com/stretchr/testify` - install testify package.
+        - `go test -v ./db/sqlc -run TestTransferTx` - example to run tests verbosely.
+
+
+### Testing for blocking 
+    Open psql in two tabs and use the following commands:
+    
+        - `Begin;` - Begin transaction on either instance
+        - `SELECT * FROM accounts WHERE id = 1;` - Works on both tabs (non-blocking). Compare with next:
+        - `SELECT * FROM accounts WHERE id = 1 FOR UPDATE;` - Now select won't run in other tab (blocked). Has to wait for first transaction to commit or rollback.
+        - `ROLLBACK;` - Rollback the transasction.
+        - `COMMIT;` - Commit the transaction.
+        
+        Now consistency can be guaranteed:
+        - `UPDATE accounts SET balance = 500 WHERE id = 1;` - We can run this now and then commit to unblock second transaction.
+        
+        Adding 'NO KEY' will enable postgres free up ID column since it won't be updated. This prevent deadlocks as in example below:
+        - `-- name: GetAccountForUpdate :one
+            SELECT * FROM accounts
+            WHERE id = $1 LIMIT 1
+            FOR NO KEY UPDATE;`
+            
+        
