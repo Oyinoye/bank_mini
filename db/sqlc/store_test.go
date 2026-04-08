@@ -19,8 +19,8 @@ func TestTransferTx(t *testing.T) {
 	fmt.Println(">> before:", account1.Balance, account2.Balance)
 
     // number of concurrent transfer transactions
-	n := 2
-	amount := "10"
+	n := 5
+	amount := "10.10"
 
     // Use channels to enable data sharing between different go routines.
     // make keyward creates the channel
@@ -30,23 +30,8 @@ func TestTransferTx(t *testing.T) {
 	// run n concurrent transfer transaction
 	for i := 0; i < n; i++ {
 
-	// 	go func() {
-	// 		result, err := store.TransferTx(context.Background(), TransferTxParams{
-	// 			FromAccountID: account1.ID,
-	// 			ToAccountID:   account2.ID,
-	// 			Amount:        amount,
-	// 		})
-
-    //         // Send errors and results to respective channel.   channel <- data
-	// 		errs <- err
-	// 		results <- result
-	// 	}()
-
-        // Commented - This code below is used for debugging deadlock scenario.
-        txName := fmt.Sprintf("tx %d", i+1)
 		go func() {
-            ctx := context.WithValue(context.Background(), txKey, txName) // now context will hold transaction key and name
-			result, err := store.TransferTx(ctx, TransferTxParams{
+			result, err := store.TransferTx(context.Background(), TransferTxParams{
 				FromAccountID: account1.ID,
 				ToAccountID:   account2.ID,
 				Amount:        amount,
@@ -56,6 +41,21 @@ func TestTransferTx(t *testing.T) {
 			errs <- err
 			results <- result
 		}()
+
+        // // Commented: Debug code - This code below is used for debugging deadlock scenario.
+        // txName := fmt.Sprintf("tx %d", i+1)
+		// go func() {
+        //     ctx := context.WithValue(context.Background(), txKey, txName) // now context will hold transaction key and name
+		// 	result, err := store.TransferTx(ctx, TransferTxParams{
+		// 		FromAccountID: account1.ID,
+		// 		ToAccountID:   account2.ID,
+		// 		Amount:        amount,
+		// 	})
+
+        //     // Send errors and results to respective channel.   channel <- data
+		// 	errs <- err
+		// 	results <- result
+		// }()
 	}
 
 	// check results
@@ -166,48 +166,54 @@ func TestTransferTx(t *testing.T) {
 	require.Equal(t, 0, eb2.Cmp(ub2))
 }
 
-// func TestTransferTxDeadlock(t *testing.T) {
-// 	account1 := createRandomAccount(t)
-// 	account2 := createRandomAccount(t)
-// 	fmt.Println(">> before:", account1.Balance, account2.Balance)
 
-// 	n := 10
-// 	amount := int64(10)
-// 	errs := make(chan error)
+// Deadlock testing
+func TestTransferTxDeadlock(t *testing.T) {
+    fmt.Println("----Start deadlock test----")
 
-// 	for i := 0; i < n; i++ {
-// 		fromAccountID := account1.ID
-// 		toAccountID := account2.ID
+    store := NewStore(testDB)
 
-// 		if i%2 == 1 {
-// 			fromAccountID = account2.ID
-// 			toAccountID = account1.ID
-// 		}
+	account1 := createRandomAccount(t)
+	account2 := createRandomAccount(t)
+	fmt.Println(">> before:", account1.Balance, account2.Balance)
 
-// 		go func() {
-// 			_, err := store.TransferTx(context.Background(), TransferTxParams{
-// 				FromAccountID: fromAccountID,
-// 				ToAccountID:   toAccountID,
-// 				Amount:        amount,
-// 			})
+	n := 10
+	amount := "10"
+	errs := make(chan error)
 
-// 			errs <- err
-// 		}()
-// 	}
+	for i := 0; i < n; i++ {
+		fromAccountID := account1.ID
+		toAccountID := account2.ID
 
-// 	for i := 0; i < n; i++ {
-// 		err := <-errs
-// 		require.NoError(t, err)
-// 	}
+		if i%2 == 1 {
+			fromAccountID = account2.ID
+			toAccountID = account1.ID
+		}
 
-// 	// check the final updated balance
-// 	updatedAccount1, err := store.GetAccount(context.Background(), account1.ID)
-// 	require.NoError(t, err)
+		go func() {
+			_, err := store.TransferTx(context.Background(), TransferTxParams{
+				FromAccountID: fromAccountID,
+				ToAccountID:   toAccountID,
+				Amount:        amount,
+			})
 
-// 	updatedAccount2, err := store.GetAccount(context.Background(), account2.ID)
-// 	require.NoError(t, err)
+			errs <- err
+		}()
+	}
 
-// 	fmt.Println(">> after:", updatedAccount1.Balance, updatedAccount2.Balance)
-// 	require.Equal(t, account1.Balance, updatedAccount1.Balance)
-// 	require.Equal(t, account2.Balance, updatedAccount2.Balance)
-// }
+	for i := 0; i < n; i++ {
+		err := <-errs
+		require.NoError(t, err)
+	}
+
+	// check the final updated balance
+	updatedAccount1, err := store.GetAccount(context.Background(), account1.ID)
+	require.NoError(t, err)
+
+	updatedAccount2, err := store.GetAccount(context.Background(), account2.ID)
+	require.NoError(t, err)
+
+	fmt.Println(">> after:", updatedAccount1.Balance, updatedAccount2.Balance)
+	require.Equal(t, account1.Balance, updatedAccount1.Balance)
+	require.Equal(t, account2.Balance, updatedAccount2.Balance)
+}

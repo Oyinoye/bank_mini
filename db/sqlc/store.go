@@ -127,9 +127,9 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
 
-        txName := ctx.Value(txKey)  // cos txKey was added to context in store_test.go
+        // txName := ctx.Value(txKey)  // cos txKey was added to context in store_test.go
 
-        fmt.Println(txName, "create transfer")
+        // fmt.Println(txName, "create transfer")
 
 		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams{
 			FromAccountID: arg.FromAccountID,
@@ -140,7 +140,7 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 			return err
 		}
 
-        fmt.Println(txName, "create entry 1")
+        // fmt.Println(txName, "create entry 1")
 
 		result.FromEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: arg.FromAccountID,
@@ -150,7 +150,7 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 			return err
 		}
 
-        fmt.Println(txName, "create entry 2")
+        // fmt.Println(txName, "create entry 2")
 
 		result.ToEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: arg.ToAccountID,
@@ -160,57 +160,68 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 			return err
 		}
 
-        // Updating implementation
+        // Lock and update accounts in a deterministic ID order to avoid deadlocks.
+        firstID := arg.FromAccountID
+        secondID := arg.ToAccountID
+        if firstID > secondID {
+            firstID, secondID = secondID, firstID
+        }
 
-        // From account
-
-        fmt.Println(txName, "get account 1 for update")
-
-        account1, err := q.GetAccountForUpdate(ctx, arg.FromAccountID)
+        firstAccount, err := q.GetAccountForUpdate(ctx, firstID)
         if err != nil {
             return err
         }
 
-        // Debit: new balance = current balance - transfer amount (string decimals, not int math).
-        newFromBal, serr := subMoneyStrings(account1.Balance, arg.Amount)
-        if serr != nil {
-            return serr
-        }
-
-        result.FromAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
-            ID: arg.FromAccountID,
-            Balance: newFromBal,
-        })
-
-        if err != nil {
-			return err
-		}
-
-        // To account
-
-        fmt.Println(txName, "get account 2 for update")
-
-        account2, err := q.GetAccountForUpdate(ctx, arg.ToAccountID)
+        secondAccount, err := q.GetAccountForUpdate(ctx, secondID)
         if err != nil {
             return err
         }
 
-        // Credit: new balance = current balance + transfer amount.
-        newToBal, serr := addMoneyStrings(account2.Balance, arg.Amount)
+        accountsByID := map[int64]Account{
+            firstID:  firstAccount,
+            secondID: secondAccount,
+        }
+
+        fromCurrent := accountsByID[arg.FromAccountID]
+        toCurrent := accountsByID[arg.ToAccountID]
+
+        newFromBal, serr := subMoneyStrings(fromCurrent.Balance, arg.Amount)
+        if serr != nil {
+            return serr
+        }
+        newToBal, serr := addMoneyStrings(toCurrent.Balance, arg.Amount)
         if serr != nil {
             return serr
         }
 
-        fmt.Println(txName, "update account 2 balance")
+        newBalanceByID := map[int64]string{
+            arg.FromAccountID: newFromBal,
+            arg.ToAccountID:   newToBal,
+        }
 
-        result.ToAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
-            ID: arg.ToAccountID,
-            Balance: newToBal,
+        firstUpdated, err := q.UpdateAccount(ctx, UpdateAccountParams{
+            ID:      firstID,
+            Balance: newBalanceByID[firstID],
         })
-
         if err != nil {
-			return err
-		}
+            return err
+        }
+
+        secondUpdated, err := q.UpdateAccount(ctx, UpdateAccountParams{
+            ID:      secondID,
+            Balance: newBalanceByID[secondID],
+        })
+        if err != nil {
+            return err
+        }
+
+        updatedByID := map[int64]Account{
+            firstID:  firstUpdated,
+            secondID: secondUpdated,
+        }
+        result.FromAccount = updatedByID[arg.FromAccountID]
+        result.ToAccount = updatedByID[arg.ToAccountID]
+
 
 		// if arg.FromAccountID < arg.ToAccountID {
 		// 	result.FromAccount, result.ToAccount, err = addMoney(ctx, q, arg.FromAccountID, -arg.Amount, arg.ToAccountID, arg.Amount)
