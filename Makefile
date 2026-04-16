@@ -23,4 +23,7 @@ test:
 	go test -v -cover ./...
 #     ./... to run tests in all the folders
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc
+server:
+	go run main.go
+
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test
