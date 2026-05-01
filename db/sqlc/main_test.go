@@ -3,11 +3,11 @@ package db
 import (
 	"database/sql"
 	"log"
-    "os"
+	"os"
 	"testing"
 
-    _ "github.com/lib/pq"
-
+	"github.com/Oyinoye/bank_mini/util"
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -19,8 +19,12 @@ var testQueries *Queries
 var testDB *sql.DB
 
 func TestMain(m *testing.M) {
-    var err error
-	testDB, err = sql.Open(dbDriver, dbSource)
+    config, err := util.LoadConfig("../..")
+    if err != nil {
+        log.Fatal("cannot load convig:", err)
+    }
+
+	testDB, err = sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
