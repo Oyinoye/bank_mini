@@ -27,6 +27,7 @@
  - Commands:
     * `migrate create -ext sql -dir db/migration` - create up and down migration files.
     * `migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up` - run the migration in migration folder.
+    * `migrate create -ext sql -dir db/migration -seq add_users` - example migration for updating db schema for added users table
 
 
 ### Options for Running SQL querie in Go
@@ -67,7 +68,9 @@
     Normal testing can be done using conditionals. But testify package (www.github.com/stretchr/testify) can be used to get check test result
         - `go get github.com/stretchr/testify` - install testify package.
         - `go test -v ./db/sqlc -run TestTransferTx` - example to run tests verbosely.
-
+        
+    Using Mockgen package for mocking
+        -  `mockgen -package mockdb -destination db/mock/store.go github.com/Oyinoye/bank_mini/db/sqlc Store`
 
 ### Testing for blocking 
     Open psql in two tabs and use the following commands:
@@ -86,5 +89,11 @@
             SELECT * FROM accounts
             WHERE id = $1 LIMIT 1
             FOR NO KEY UPDATE;`
-            
-        
+
+### API with GO 
+    Gin is a robust, popular and widely used package.
+        -  
+               
+### Loading from .env
+    Viper is a great package for configuration. Search and installation.
+        - 

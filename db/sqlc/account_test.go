@@ -38,10 +38,12 @@ import (
 
 // Using go's testfy package
 // createRandomAccount is a test helper that creates a single account in the test DB.
+
 func createRandomAccount(t *testing.T) Account {
+    user := createRandomUser(t)
 
 	arg := CreateAccountParams{
-		Owner:    util.RandomOwner(),
+		Owner:    user.Username,
 		Balance:  util.RandomMoney(), // Balance is a string type (mapped from DECIMAL)
 		Currency: util.RandomCurrency(),
 	}
