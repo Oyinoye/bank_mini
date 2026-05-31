@@ -92,7 +92,7 @@
 
 ### API with GO 
     Gin is a robust, popular and widely used package.
-        -  
+        -  Check Gin docs for more info.
                
 ### Loading from .env
     Viper is a great package for configuration. Search and installation.
@@ -101,4 +101,16 @@
 
 ### Security (PASETO vs JWT)
     Paseto is more advantageous than JWT as it is more secure and mitigates security risks of JWT.
-        - 
+        - Check docs for more info.
+
+
+### Use DBdocs to generate documentation.
+    Installation and usage instructions- [dbdocs](https://dbdocs.io/)
+        - Put in the SQL code and it's good to go.
+        - To acces us `dbdocs login` command as specified in the docs.
+        - `dbdocs build doc/db.dbml` - will generate the documentation
+        - `dbdocs pasword --sset <password> --project <projectname>` sets the password.
+        
+    Using DBML cli:
+        - `npm install -g @dbml/cli`
+        - `dbml2sql --postgres -o doc/schema.sql doc/db.dbml`

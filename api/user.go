@@ -1,13 +1,14 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
 	"github.com/Oyinoye/bank_mini/util"
-    "github.com/google/uuid"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
 

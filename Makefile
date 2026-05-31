@@ -22,6 +22,15 @@ migratedown:
 migratedown1:
 	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
 
+mock:
+	mockgen -package mockdb -destination db/mock/store.go github.com/Oyinoye/bank_mini/db/sqlc Store
+
+db_docs:
+	dbdocs build doc/db.dbml
+
+db_schema:
+	dbml2sql --postgres -o doc/schema.sql doc/db.dbml
+
 sqlc:
 	sqlc generate
 
@@ -32,7 +41,5 @@ test:
 server:
 	go run main.go
 
-mock:
-	mockgen -package mockdb -destination db/mock/store.go github.com/Oyinoye/bank_mini/db/sqlc Store
 
 .PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock
