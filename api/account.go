@@ -4,6 +4,7 @@ import (
 	// 	"fmt"
 	"database/sql"
 	"log"
+    "errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,12 +12,11 @@ import (
 	// "github.com/gin-gonic/gin/binding"
 	// "github.com/go-playground/validator/v10"
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
-	// "github.com/Oyinoye/bank_mini/token"
+	"github.com/Oyinoye/bank_mini/token"
 	// "github.com/Oyinoye/bank_mini/util"
 )
 
 type createAccountRequest struct {
-	Owner string `json:"owner" binding:"required"`
 	Currency string `json:"currency" binding:"required,oneof=USD EUR"`
 }
 
@@ -27,9 +27,9 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		return
 	}
 
-	// authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.CreateAccountParams{
-		Owner:    req.Owner,
+		Owner:    authPayload.Username,
 		Currency: req.Currency,
 		Balance:  "0",
 	}
@@ -80,12 +80,12 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		return
 	}
 
-	// authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-	// if account.Owner != authPayload.Username {
-	// 	err := errors.New("account doesn't belong to the authenticated user")
-	// 	ctx.JSON(http.StatusUnauthorized, errorResponse(err))
-	// 	return
-	// }
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if account.Owner != authPayload.Username {
+		err := errors.New("account doesn't belong to the authenticated user")
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
 
 	ctx.JSON(http.StatusOK, account)
 }
@@ -103,9 +103,9 @@ func (server *Server) listAccounts(ctx *gin.Context) {
 		return
 	}
 
-	// authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.ListAccountsParams{
-		// Owner:  authPayload.Username,
+		Owner:  authPayload.Username,
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}

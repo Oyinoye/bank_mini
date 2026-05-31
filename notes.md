@@ -97,3 +97,8 @@
 ### Loading from .env
     Viper is a great package for configuration. Search and installation.
         - 
+
+
+### Security (PASETO vs JWT)
+    Paseto is more advantageous than JWT as it is more secure and mitigates security risks of JWT.
+        - 
