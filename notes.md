@@ -132,6 +132,16 @@ Quickstart with Go instructions [found here](https://grpc.io/docs/languages/go/)
     - `protoc --version` - check if Protocol buffer compiler, protoc is installed...
     - `protoc-gen-go --version` - check if Protocol buffer compiler, protoc is installed...
     
+Installation command
+    - `go get google.golang.org/grpc` - Run at go project route.
+
+Additional prerequisites for generating code:
+If these imports are appearing in code you are automatically generating from a .proto file, you will also need the protobuf compiler and the Go code generation plugins
+    - `go install google.golang.org/protobuf/cmd/protoc-gen-go@latest`
+    - `go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest`
+    
+After running, to ensure everything syncs correctly, also run:
+    - `go mod tidy`
     
 ### gRPC Client
 Evans is a good rpc client.

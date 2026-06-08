@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
@@ -44,7 +45,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	arg := db.TransferTxParams{
 		FromAccountID: req.FromAccountID,
 		ToAccountID:   req.ToAccountID,
-		Amount:        req.Amount,
+		Amount:        strconv.FormatInt(req.Amount, 10),
 	}
 
 	result, err := server.store.TransferTx(ctx, arg)

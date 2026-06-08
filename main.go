@@ -1,11 +1,17 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"log"
+	"net"
 
+	"github.com/Oyinoye/bank_mini/gapi"
 	"github.com/Oyinoye/bank_mini/pb"
 	"github.com/Oyinoye/bank_mini/util"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	"github.com/Oyinoye/bank_mini/api"
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
@@ -51,23 +57,26 @@ func runGrpcServer(
 	waitGroup *errgroup.Group,
 	config util.Config,
 	store db.Store,
-	taskDistributor worker.TaskDistributor,
+// 	taskDistributor worker.TaskDistributor,
 ) {
 	server, err := gapi.NewServer(config, store,
-        taskDistributor
+        // taskDistributor
     )
 	if err != nil {
-		log.Fatal().Err(err).Msg("cannot create server")
+		// log.Fatal().Err(err).Msg("cannot create server")
+		log.Fatal("cannot create server")
 	}
 
-	gprcLogger := grpc.UnaryInterceptor(gapi.GrpcLogger)
-	grpcServer := grpc.NewServer(gprcLogger)
+	// gprcLogger := grpc.UnaryInterceptor(gapi.GrpcLogger)
+	// grpcServer := grpc.NewServer(gprcLogger)
+	grpcServer := grpc.NewServer()
 	pb.RegisterSimpleBankServer(grpcServer, server)
 	reflection.Register(grpcServer)
 
 	listener, err := net.Listen("tcp", config.GRPCServerAddress)
 	if err != nil {
-		log.Fatal().Err(err).Msg("cannot create listener")
+		// log.Fatal().Err(err).Msg("cannot create listener")
+		log.Fatal("cannot create listener")
 	}
 
     log.Printf("start gRPC server at %s", listener.Addr().String())
@@ -106,11 +115,13 @@ func runGrpcServer(
 func runGinServer(config util.Config, store db.Store) {
 	server, err := api.NewServer(config, store)
 	if err != nil {
-		log.Fatal().Err(err).Msg("cannot create server")
+		// log.Fatal().Err(err).Msg("cannot create server")
+		log.Fatal("cannot create server")
 	}
 
 	err = server.Start(config.HTTPServerAddress)
 	if err != nil {
-		log.Fatal().Err(err).Msg("cannot start server")
+		// log.Fatal().Err(err).Msg("cannot start server")
+		log.Fatal("cannot start server")
 	}
 }

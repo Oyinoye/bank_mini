@@ -20,6 +20,7 @@ import (
 
 func TestTransferAPI(t *testing.T) {
 	amount := int64(10)
+	amountStr := "10"
 
 	user1, _ := randomUser(t)
 	user2, _ := randomUser(t)
@@ -58,7 +59,7 @@ func TestTransferAPI(t *testing.T) {
 				arg := db.TransferTxParams{
 					FromAccountID: account1.ID,
 					ToAccountID:   account2.ID,
-					Amount:        amount,
+					Amount:        amountStr,
 				}
 				store.EXPECT().TransferTx(gomock.Any(), gomock.Eq(arg)).Times(1)
 			},

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
+	"github.com/Oyinoye/bank_mini/token"
 	"github.com/Oyinoye/bank_mini/util"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
