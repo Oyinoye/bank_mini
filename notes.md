@@ -114,3 +114,34 @@
     Using DBML cli:
         - `npm install -g @dbml/cli`
         - `dbml2sql --postgres -o doc/schema.sql doc/db.dbml`
+
+
+## gRPC with Go
+
+Remote Procedure calls have the features of being highly performant (built on HTTP/2 and supports binary framing, multiplexing, header compression, bidirectional communication), allows strong API contract and Automatic code generation. Read more on the [documentation](https://grpc.io/docs)
+
+### Types of gRPC
+    - Unary gRPC
+    - Client streaming gRPC
+    - Server streamig gRPC
+    - Bidirectional streaming gRPC
+
+
+### Quickstart
+Quickstart with Go instructions [found here](https://grpc.io/docs/languages/go/) 
+    - `protoc --version` - check if Protocol buffer compiler, protoc is installed...
+    - `protoc-gen-go --version` - check if Protocol buffer compiler, protoc is installed...
+    
+    
+### gRPC Client
+Evans is a good rpc client.
+    - `protoc --version` - check if Protocol buffer compiler, protoc is installed...
+    - `protoc-gen-go --version` - check if Protocol buffer compiler, protoc is installed...
+Install Evans client for grpc API testing at [Evans' github](https://github.com/ktr0731/evans)
+    - `evans --host localhost --port 9090 -r repl` or `evans -r repl`
+
+
+### Other tools used
+Pgx - PostgreSQL Driver and Toolkit.
+    - `$ go get github.com/jackc/pgx/v5` - check [PGX docs](https://github.com/jackc/pgx) 
+

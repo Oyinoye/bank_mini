@@ -22,6 +22,9 @@ migratedown:
 migratedown1:
 	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
 
+new_migration:
+	migrate create -ext sql -dir db/migration -seq $(name)
+
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/Oyinoye/bank_mini/db/sqlc Store
 
@@ -34,6 +37,12 @@ db_schema:
 sqlc:
 	sqlc generate
 
+proto:
+	rm -f pb/*.go
+    protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+	--go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+	proto/*.proto
+
 test:
 	go test -v -cover ./...
 #     ./... to run tests in all the folders
@@ -42,4 +51,4 @@ server:
 	go run main.go
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc proto test server mock

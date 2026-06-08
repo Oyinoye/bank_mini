@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"log"
 
-    "github.com/Oyinoye/bank_mini/util"
+	"github.com/Oyinoye/bank_mini/pb"
+	"github.com/Oyinoye/bank_mini/util"
 
 	"github.com/Oyinoye/bank_mini/api"
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
@@ -30,13 +31,86 @@ func main() {
 	}
 
 	store := db.NewStore(conn)
-    server, err := api.NewServer(config, store)
+
+    runGinServer(config, store)
+
+
+    // server, err := api.NewServer(config, store)
+    // if err != nil {
+    //     log.Fatal("cannot create server:", err)
+    // }
+
+	// err = server.Start(config.ServerAddress)
+    // if err != nil {
+    //     log.Fatal("cannot start server:", err)
+    // }
+}
+
+func runGrpcServer(
+	ctx context.Context,
+	waitGroup *errgroup.Group,
+	config util.Config,
+	store db.Store,
+	taskDistributor worker.TaskDistributor,
+) {
+	server, err := gapi.NewServer(config, store,
+        taskDistributor
+    )
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot create server")
+	}
+
+	gprcLogger := grpc.UnaryInterceptor(gapi.GrpcLogger)
+	grpcServer := grpc.NewServer(gprcLogger)
+	pb.RegisterSimpleBankServer(grpcServer, server)
+	reflection.Register(grpcServer)
+
+	listener, err := net.Listen("tcp", config.GRPCServerAddress)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot create listener")
+	}
+
+    log.Printf("start gRPC server at %s", listener.Addr().String())
+
+    err = grpcServer.Serve(listener)
     if err != nil {
-        log.Fatal("cannot create server:", err)
+        log.Fatal("cannot start gRPC server")
     }
 
-	err = server.Start(config.ServerAddress)
-    if err != nil {
-        log.Fatal("cannot start server:", err)
-    }
+	// waitGroup.Go(func() error {
+	// 	log.Info().Msgf("start gRPC server at %s", listener.Addr().String())
+
+	// 	err = grpcServer.Serve(listener)
+	// 	if err != nil {
+	// 		if errors.Is(err, grpc.ErrServerStopped) {
+	// 			return nil
+	// 		}
+	// 		log.Error().Err(err).Msg("gRPC server failed to serve")
+	// 		return err
+	// 	}
+
+	// 	return nil
+	// })
+
+	// waitGroup.Go(func() error {
+	// 	<-ctx.Done()
+	// 	log.Info().Msg("graceful shutdown gRPC server")
+
+	// 	grpcServer.GracefulStop()
+	// 	log.Info().Msg("gRPC server is stopped")
+
+	// 	return nil
+	// })
+}
+
+func runGinServer(config util.Config, store db.Store) {
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot create server")
+	}
+
+	err = server.Start(config.HTTPServerAddress)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot start server")
+	}
 }
