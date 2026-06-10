@@ -134,6 +134,7 @@ Quickstart with Go instructions [found here](https://grpc.io/docs/languages/go/)
     
 Installation command
     - `go get google.golang.org/grpc` - Run at go project route.
+    - `brew install protobuf`
 
 Additional prerequisites for generating code:
 If these imports are appearing in code you are automatically generating from a .proto file, you will also need the protobuf compiler and the Go code generation plugins
@@ -149,6 +150,13 @@ Evans is a good rpc client.
     - `protoc-gen-go --version` - check if Protocol buffer compiler, protoc is installed...
 Install Evans client for grpc API testing at [Evans' github](https://github.com/ktr0731/evans)
     - `evans --host localhost --port 9090 -r repl` or `evans -r repl`
+Evans commands
+    - `show service` - displays rpc services.
+    - `show package` - shows the available packages
+    - `package pb` - package has to be selected. Since tis proto usess pb, service is pb.SimpleBank.
+    - `service SimpleBank` - select SimpleBank service.
+    - `call CreateUser` - call the create user function.
+    - `exit` - exits the console.
 
 
 ### Other tools used

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	// "context"
 	"database/sql"
 	"log"
 	"net"
@@ -9,7 +9,7 @@ import (
 	"github.com/Oyinoye/bank_mini/gapi"
 	"github.com/Oyinoye/bank_mini/pb"
 	"github.com/Oyinoye/bank_mini/util"
-	"golang.org/x/sync/errgroup"
+	// "golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -38,7 +38,8 @@ func main() {
 
 	store := db.NewStore(conn)
 
-    runGinServer(config, store)
+    // runGinServer(config, store)
+    runGrpcServer(config, store)
 
 
     // server, err := api.NewServer(config, store)
@@ -53,8 +54,8 @@ func main() {
 }
 
 func runGrpcServer(
-	ctx context.Context,
-	waitGroup *errgroup.Group,
+	// ctx context.Context,
+	// waitGroup *errgroup.Group,
 	config util.Config,
 	store db.Store,
 // 	taskDistributor worker.TaskDistributor,
