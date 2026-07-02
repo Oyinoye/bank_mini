@@ -13,7 +13,7 @@ import (
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
 	_ "github.com/Oyinoye/bank_mini/doc/statik"
 	"github.com/Oyinoye/bank_mini/gapi"
-	"github.com/Oyinoye/bank_mini/mail"
+	// "github.com/Oyinoye/bank_mini/mail"
 	"github.com/Oyinoye/bank_mini/pb"
 	"github.com/Oyinoye/bank_mini/util"
 	"github.com/Oyinoye/bank_mini/worker"
@@ -198,11 +198,14 @@ func runGatewayServer(
 	mux := http.NewServeMux()
 	mux.Handle("/", grpcMux)
 
-	statikFS, err := fs.New()
+    // fs := http.FileServer(http.Dir("./doc/swagger"))
+
+    statikFS, err := fs.New()
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create statik fs")
 	}
 
+    // serve the swagger doc file
 	swaggerHandler := http.StripPrefix("/swagger/", http.FileServer(statikFS))
 	mux.Handle("/swagger/", swaggerHandler)
 

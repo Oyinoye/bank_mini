@@ -159,15 +159,21 @@ Evans commands
     - `exit` - exits the console.
 
 ### gRPC Gateway
-A plugin of protobuf compiler. It allows both grpc and normal http clients to connect respectively to the GRPC server and Gateway respectively from a single code. It generates HTTP proxy codes from protobuf definition. Conversion takes place between Gateway and GRPC (in-process translation).
+A plugin of protobuf compiler. It allows both grpc and normal http clients to connect respectively to the GRPC server and Gateway resçectively from a single code. It generates HTTP proxy codes from protobuf definition. Conversion takes place between Gateway and GRPC (in-process translation).
 This in-process translation works for only unary rpc. A separate proxy server is needed for streaming as well as a combination of unary and streaming. 
 [Read more.](https://github.com/grpc-ecosystem/grpc-gateway)
 
     - `protoc --version` - check if Protocol buffer compiler, protoc is installed...
     - `protoc-gen-go --version` - check if Protocol buffer compiler, protoc is installed...
-    - `protoc-gen-grpc-gateway --help to show other options that can be added (check protoc command in make file)
+    - `protoc-gen-grpc-gateway --help to show other options that can be added (check protoc command in make file)çç
+    
+### gRPC Gateway wagger Documentation
+Documentation instructions found in the link from previous section (grpc gateway). 
+Serve swagger documentation using static file server. [Statik](https://github.com/rakyll/statik) library is a great option with many advantages over just reading and serving the files as is.
 
 ### Other tools used
 Pgx - PostgreSQL Driver and Toolkit.
     - `$ go get github.com/jackc/pgx/v5` - check [PGX docs](https://github.com/jackc/pgx) 
+zerologs - Good logs for structured logs in prod [here](https://github.com/rs/zerolog).
+    - `go get -u github.com/rs/zerolog/log`
 
