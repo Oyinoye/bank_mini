@@ -61,6 +61,7 @@ func main() {
 
 	store := db.NewStore(connPool)
 
+    // because only set locally, other fields can take default values for now
 	redisOpt := asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}
@@ -131,8 +132,8 @@ func runGrpcServer(
 		log.Fatal().Err(err).Msg("cannot create server")
 	}
 
-	gprcLogger := grpc.UnaryInterceptor(gapi.GrpcLogger)
-	grpcServer := grpc.NewServer(gprcLogger)
+	grpcLogger := grpc.UnaryInterceptor(gapi.GrpcLogger)
+	grpcServer := grpc.NewServer(grpcLogger)
 	pb.RegisterSimpleBankServer(grpcServer, server)
 	reflection.Register(grpcServer)
 

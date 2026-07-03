@@ -7,6 +7,7 @@ import (
 	"github.com/Oyinoye/bank_mini/pb"
 	"github.com/Oyinoye/bank_mini/token"
 	"github.com/Oyinoye/bank_mini/util"
+	"github.com/Oyinoye/bank_mini/worker"
 )
 
 // Server serves gRPC requests for our banking service.
@@ -15,13 +16,12 @@ type Server struct {
 	config          util.Config
 	store           db.Store
 	tokenMaker      token.Maker
-	// taskDistributor worker.TaskDistributor
+	taskDistributor worker.TaskDistributor
 }
 
 // NewServer creates a new gRPC server.
 func NewServer(config util.Config, store db.Store,
-    // taskDistributor worker.TaskDistributor
-    ) (*Server, error) {
+    taskDistributor worker.TaskDistributor) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
@@ -31,7 +31,7 @@ func NewServer(config util.Config, store db.Store,
 		config:          config,
 		store:           store,
 		tokenMaker:      tokenMaker,
-		// taskDistributor: taskDistributor,
+		taskDistributor: taskDistributor,
 	}
 
 	return server, nil

@@ -171,6 +171,13 @@ This in-process translation works for only unary rpc. A separate proxy server is
 Documentation instructions found in the link from previous section (grpc gateway). 
 Serve swagger documentation using static file server. [Statik](https://github.com/rakyll/statik) library is a great option with many advantages over just reading and serving the files as is.
 
+### Asynchronous
+For asynchronous tasks, rather than using just Go Routines, which only keeps the tasks in-memory (lost on system shutdown); message broker can be used alongside distributed task queue for task persistence as well as in-memory processing.
+For this, [Asynq](https://github.com/hibiken/asynq) library for GO can be used, along with Redis for queing.
+    - `go get -u github.com/hibiken/asynq` - installs the Asynq library.
+    - `docker run --name redis -p 6379:6379 -d redis:7-alpine` - Run Redis in docker
+    - `docker exec -it redis redis-cli ping` - check if alive (response will be 'pong').
+
 ### Other tools used
 Pgx - PostgreSQL Driver and Toolkit.
     - `$ go get github.com/jackc/pgx/v5` - check [PGX docs](https://github.com/jackc/pgx) 

@@ -50,6 +50,9 @@ proto:
 evans:
 	evans --host localhost --port 9090 -r repl
 
+redis:
+	docker run --name redis -p 6379:6379 -d redis:7-alpine
+
 test:
 	go test -v -cover ./...
 #     ./... to run tests in all the folders
@@ -58,4 +61,4 @@ server:
 	go run main.go
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc proto test server mock
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc proto test server mock evans redis
