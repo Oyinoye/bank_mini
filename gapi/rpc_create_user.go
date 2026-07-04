@@ -10,7 +10,7 @@ import (
 	"github.com/Oyinoye/bank_mini/val"
 	"github.com/Oyinoye/bank_mini/worker"
 	"github.com/hibiken/asynq"
-	"github.com/lib/pq"
+	// "github.com/lib/pq"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

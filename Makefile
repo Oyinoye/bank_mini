@@ -27,6 +27,7 @@ new_migration:
 
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/Oyinoye/bank_mini/db/sqlc Store
+	mockgen -package mockwk -destination worker/mock/distributor.go github.com/Oyinoye/bank_mini/worker TaskDistributor
 
 db_docs:
 	dbdocs build doc/db.dbml
@@ -54,11 +55,11 @@ redis:
 	docker run --name redis -p 6379:6379 -d redis:7-alpine
 
 test:
-	go test -v -cover ./...
+	go test -v -cover -short ./...
 #     ./... to run tests in all the folders
 
 server:
 	go run main.go
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc proto test server mock evans redis
+.PHONY: postgres createdb dropdb migrateup migratedown migeratedown1 new_migration  sqlc proto test server mock evans redis

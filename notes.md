@@ -177,6 +177,11 @@ For this, [Asynq](https://github.com/hibiken/asynq) library for GO can be used, 
     - `go get -u github.com/hibiken/asynq` - installs the Asynq library.
     - `docker run --name redis -p 6379:6379 -d redis:7-alpine` - Run Redis in docker
     - `docker exec -it redis redis-cli ping` - check if alive (response will be 'pong').
+    
+### Sending mail
+Sending mail can be done using [GO SMTP](https://pkg.go.dev/net/smtp#SendMail) from standard library.
+However, for easy implementation, 3rd-party library to use is [GO EMAIL](https://github.com/jordan-wright/email).
+    - `go get github.com/jordan-wright/email` - installs the Go email library.
 
 ### Other tools used
 Pgx - PostgreSQL Driver and Toolkit.

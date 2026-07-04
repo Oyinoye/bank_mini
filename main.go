@@ -13,7 +13,7 @@ import (
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
 	_ "github.com/Oyinoye/bank_mini/doc/statik"
 	"github.com/Oyinoye/bank_mini/gapi"
-	// "github.com/Oyinoye/bank_mini/mail"
+	"github.com/Oyinoye/bank_mini/mail"
 	"github.com/Oyinoye/bank_mini/pb"
 	"github.com/Oyinoye/bank_mini/util"
 	"github.com/Oyinoye/bank_mini/worker"
