@@ -1,35 +1,53 @@
 package db
 
 import (
-	"database/sql"
+	"context"
 	"log"
 	"os"
 	"testing"
 
 	"github.com/Oyinoye/bank_mini/util"
-	_ "github.com/lib/pq"
+	// _ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const (
-    dbDriver = "postgres"
-    dbSource = "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable"
-)
+// const (
+//     dbDriver = "postgres"
+//     dbSource = "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable"
+// )
 
-var testQueries *Queries
-var testDB *sql.DB
+// var testStore *Queries
+// var testDB *sql.DB
+
+// func TestMain(m *testing.M) {
+//     config, err := util.LoadConfig("../..")
+//     if err != nil {
+//         log.Fatal("cannot load convig:", err)
+//     }
+
+// 	testDB, err = sql.Open(config.DBDriver, config.DBSource)
+// 	if err != nil {
+// 		log.Fatal("cannot connect to db:", err)
+// 	}
+
+// 	testStore = New(testDB)
+
+// 	os.Exit(m.Run())
+// }
+
+var testStore Store
 
 func TestMain(m *testing.M) {
-    config, err := util.LoadConfig("../..")
-    if err != nil {
-        log.Fatal("cannot load convig:", err)
-    }
+	config, err := util.LoadConfig("../..")
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
 
-	testDB, err = sql.Open(config.DBDriver, config.DBSource)
+	connPool, err := pgxpool.New(context.Background(), config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
 
-	testQueries = New(testDB)
-
+	testStore = NewStore(connPool)
 	os.Exit(m.Run())
 }

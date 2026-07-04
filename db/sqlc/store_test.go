@@ -12,18 +12,18 @@ import (
 func TestTransferTx(t *testing.T) {
 	fmt.Println("----Start TestTransfer test----")
 
-    store := NewStore(testDB)
+	// store := NewStore(testDB)
 
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
 	fmt.Println(">> before:", account1.Balance, account2.Balance)
 
-    // number of concurrent transfer transactions
+	// number of concurrent transfer transactions
 	n := 5
 	amount := "10.10"
 
-    // Use channels to enable data sharing between different go routines.
-    // make keyward creates the channel
+	// Use channels to enable data sharing between different go routines.
+	// make keyward creates the channel
 	errs := make(chan error)
 	results := make(chan TransferTxResult)
 
@@ -37,22 +37,22 @@ func TestTransferTx(t *testing.T) {
 				Amount:        amount,
 			})
 
-            // Send errors and results to respective channel.   channel <- data
+			// Send errors and results to respective channel.   channel <- data
 			errs <- err
 			results <- result
 		}()
 
-        // // Commented: Debug code - This code below is used for debugging deadlock scenario.
-        // txName := fmt.Sprintf("tx %d", i+1)
+		// // Commented: Debug code - This code below is used for debugging deadlock scenario.
+		// txName := fmt.Sprintf("tx %d", i+1)
 		// go func() {
-        //     ctx := context.WithValue(context.Background(), txKey, txName) // now context will hold transaction key and name
+		//     ctx := context.WithValue(context.Background(), txKey, txName) // now context will hold transaction key and name
 		// 	result, err := store.TransferTx(ctx, TransferTxParams{
 		// 		FromAccountID: account1.ID,
 		// 		ToAccountID:   account2.ID,
 		// 		Amount:        amount,
 		// 	})
 
-        //     // Send errors and results to respective channel.   channel <- data
+		//     // Send errors and results to respective channel.   channel <- data
 		// 	errs <- err
 		// 	results <- result
 		// }()
@@ -137,10 +137,10 @@ func TestTransferTx(t *testing.T) {
 	}
 
 	// check the final updated balance
-	updatedAccount1, err := testQueries.GetAccount(context.Background(), account1.ID)
+	updatedAccount1, err := testStore.GetAccount(context.Background(), account1.ID)
 	require.NoError(t, err)
 
-	updatedAccount2, err := testQueries.GetAccount(context.Background(), account2.ID)
+	updatedAccount2, err := testStore.GetAccount(context.Background(), account2.ID)
 	require.NoError(t, err)
 
 	fmt.Println(">> after:", updatedAccount1.Balance, updatedAccount2.Balance)
@@ -166,12 +166,11 @@ func TestTransferTx(t *testing.T) {
 	require.Equal(t, 0, eb2.Cmp(ub2))
 }
 
-
 // Deadlock testing
 func TestTransferTxDeadlock(t *testing.T) {
-    fmt.Println("----Start deadlock test----")
+	fmt.Println("----Start deadlock test----")
 
-    store := NewStore(testDB)
+	// store := NewStore(testDB)
 
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)

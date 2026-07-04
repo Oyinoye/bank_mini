@@ -2,7 +2,8 @@ package db
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Store defines all functions to execute db queries and transactions
@@ -13,16 +14,16 @@ type Store interface {
 	VerifyEmailTx(ctx context.Context, arg VerifyEmailTxParams) (VerifyEmailTxResult, error)
 }
 
-// Store provides all functions to execute db queries and transactions
+// SQLStore provides all functions to execute SQL queries and transactions
 type SQLStore struct {
-    *Queries
-	db *sql.DB
+	connPool *pgxpool.Pool
+	*Queries
 }
 
 // NewStore creates a new store
-func NewStore(db *sql.DB) Store {
+func NewStore(connPool *pgxpool.Pool) Store {
 	return &SQLStore{
-		db: db,
-		Queries:  New(db),
+		connPool: connPool,
+		Queries:  New(connPool),
 	}
 }
