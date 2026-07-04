@@ -3,7 +3,6 @@ package worker
 import (
 	"context"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog/log"
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
@@ -29,7 +28,6 @@ type RedisTaskProcessor struct {
 
 func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer mail.EmailSender) TaskProcessor {
 	logger := NewLogger()
-	redis.SetLogger(logger)
 
 	server := asynq.NewServer(
 		redisOpt,

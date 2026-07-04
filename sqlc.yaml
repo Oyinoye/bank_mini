@@ -46,12 +46,6 @@ sql:
               go_type: "time.Time"
             - db_type: "uuid"
               go_type: "github.com/google/uuid.UUID"
-            # Config for NOT NULL numeric columns
-            - db_type: "numeric"
+            - db_type: "pg_catalog.numeric"
               go_type: "string"
               nullable: false
-            # # Config for NULLABLE numeric columns
-            # - db_type: "numeric"
-            #   go_type: "*string"
-            #   nullable: true
-            #   pointer: true

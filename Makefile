@@ -13,7 +13,7 @@ dropdb:
 migrateup:
 	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
-migrateup:
+migrateup1:
 	migrate -path db/migration -database "$(DB_URL)" -verbose up 1
 
 migratedown:
@@ -62,4 +62,4 @@ server:
 	go run main.go
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown migeratedown1 new_migration  sqlc proto test server mock evans redis
+.PHONY: postgres createdb dropdb migrateup migrateup1 migratedown migratedown1 new_migration sqlc proto test server mock evans redis

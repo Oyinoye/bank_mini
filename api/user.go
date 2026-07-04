@@ -10,7 +10,6 @@ import (
 	"github.com/Oyinoye/bank_mini/util"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/lib/pq"
 )
 
 
@@ -62,22 +61,13 @@ func (server *Server) createUser(ctx *gin.Context) {
 
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
-		// if db.ErrorCode(err) == db.UniqueViolation {
-		// 	ctx.JSON(http.StatusForbidden, errorResponse(err))
-		// 	return
-		// }
-		// ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		// return
-
-        if pqErr, ok := err.(*pq.Error); ok {
-            switch pqErr.Code.Name() {
-            case "foreign_key_violation", "unique_violation":
-                ctx.JSON(http.StatusForbidden, errorResponse(err))
-                return
-            }
-        }
-	    ctx.JSON(http.StatusOK, user)
-        return
+		errCode := db.ErrorCode(err)
+		if errCode == db.ForeignKeyViolation || errCode == db.UniqueViolation {
+			ctx.JSON(http.StatusForbidden, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	rsp := newUserResponse(user)

@@ -7,8 +7,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addAccountBalance = `-- name: AddAccountBalance :one
@@ -19,8 +17,8 @@ RETURNING id, owner, balance, currency, created_at
 `
 
 type AddAccountBalanceParams struct {
-	Amount pgtype.Numeric `json:"amount"`
-	ID     int64          `json:"id"`
+	Amount string `json:"amount"`
+	ID     int64  `json:"id"`
 }
 
 func (q *Queries) AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Account, error) {
@@ -47,9 +45,9 @@ INSERT INTO accounts (
 `
 
 type CreateAccountParams struct {
-	Owner    string         `json:"owner"`
-	Balance  pgtype.Numeric `json:"balance"`
-	Currency string         `json:"currency"`
+	Owner    string `json:"owner"`
+	Balance  string `json:"balance"`
+	Currency string `json:"currency"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
@@ -160,8 +158,8 @@ RETURNING id, owner, balance, currency, created_at
 `
 
 type UpdateAccountParams struct {
-	ID      int64          `json:"id"`
-	Balance pgtype.Numeric `json:"balance"`
+	ID      int64  `json:"id"`
+	Balance string `json:"balance"`
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {

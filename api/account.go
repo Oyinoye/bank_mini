@@ -1,19 +1,12 @@
 package api
 
 import (
-	// 	"fmt"
-	"database/sql"
-	"log"
-    "errors"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/lib/pq"
-	// "github.com/gin-gonic/gin/binding"
-	// "github.com/go-playground/validator/v10"
 	db "github.com/Oyinoye/bank_mini/db/sqlc"
 	"github.com/Oyinoye/bank_mini/token"
-	// "github.com/Oyinoye/bank_mini/util"
 )
 
 type createAccountRequest struct {
@@ -31,7 +24,7 @@ func (server *Server) createAccount(ctx *gin.Context) {
 	arg := db.CreateAccountParams{
 		Owner:    authPayload.Username,
 		Currency: req.Currency,
-		Balance:  0,
+		Balance:  "0",
 	}
 
 	account, err := server.store.CreateAccount(ctx, arg)
