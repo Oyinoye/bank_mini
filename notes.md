@@ -189,3 +189,24 @@ Pgx - PostgreSQL Driver and Toolkit.
 zerologs - Good logs for structured logs in prod [here](https://github.com/rs/zerolog).
     - `go get -u github.com/rs/zerolog/log`
 
+
+
+### Deploying App to Production
+Use Docker multi-tage build to build just the binary, thereby keeping image size small.
+    - `docker build -t minibank:latest .` - build latest image of app.
+    - `docker images` - view all docker images.
+    - `docker rmi <imgname>` - remove an image (use tab key to get container name)
+    - `docker run --name minibank -p 8080:8080 minibank:latest` - run docker container
+    - `docker container inspect postgres12` - inspect container and get ip address 
+    - `docker run --name minibank -p 8080:8080 -e GIN_MODE=release -e DB_SOURCE="postgresql://root:secret@172.17.0.3:5433/simple_bank?sslmode=disable" minibank:latest` - start container and override with specified db url. 
+    - `docker run --name minibank --network bank-network -p 8080:8080 -e GIN_MODE=release -e DB_SOURCE="postgresql://root:secret@postgres12:5432/simple_bank?sslmode=disable" minibank:latest` - start with added network. 
+    - `docker network ls` - view all networks and see better way to connect db.
+    - `docker network inpect <networkname>` - inspect the named network.
+    - `docker network create bank-network` - creates a network named bank-network.
+    - `docker network connect bank-network postgres12` - connects postgres to the network.
+    - `chmod +x start.sh` - make start.sh executable. Needed to run the migration before app startup.
+
+### Amazon Deployment
+Search for marketplace, ECR in github actions. Paste into workflow file.
+In IAM, add user and give the necessary permissions. 
+Secrets: Go to settings and under actions secrets register the repository secrets. 
